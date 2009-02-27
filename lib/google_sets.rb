@@ -21,6 +21,10 @@ class GoogleSet
     end
   end
   
+  def [](index); items[index]; end
+  def size; items.size; end
+  def rand; items[rand(items.size)]; end
+  
   protected
     
     def query_string
