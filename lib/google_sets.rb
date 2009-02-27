@@ -3,7 +3,7 @@ require 'cgi'
 
 class GoogleSet
   SETS_DOMAIN = 'labs.google.com'
-  SETS_PATH   = '/sets'
+  SETS_PATH   = '/sets?hl=en&btn=Large+Set'
   
   attr_accessor :items
   
@@ -17,13 +17,18 @@ class GoogleSet
   def items(reload = false)
     @items = nil if reload
     @items ||= begin 
-      Net::HTTP.start(SETS_DOMAIN, 80) { |http| http.get(SETS_PATH + "?" + query_string) }
+      path   = SETS_PATH + '&' + query_string
+      puts path
+      result = Net::HTTP.start(SETS_DOMAIN, 80) { |http| http.get(path) }
+      result.body.scan(/<a href="http:\/\/www\.google\.com\/search\?hl=en&amp;q=[^"]+">(.*?)<\/a>/)
     end
   end
   
   def [](index); items[index]; end
   def size; items.size; end
-  def rand; items[rand(items.size)]; end
+  def rand; items[Kernel.rand(items.size)]; end
+  def to_s; items.join("\n"); end
+  def to_a; items.dup; end
   
   protected
     
@@ -31,5 +36,3 @@ class GoogleSet
       @params.map {|k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')
     end
 end
-
-puts GoogleSet.new('titania', 'oberon', 'romeo').items
