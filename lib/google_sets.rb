@@ -14,7 +14,8 @@ class GoogleSet
     end
   end
   
-  def items
+  def items(reload = false)
+    @items = nil if reload
     @items ||= begin 
       Net::HTTP.start(SETS_DOMAIN, 80) { |http| http.get(SETS_PATH + "?" + query_string) }
     end
