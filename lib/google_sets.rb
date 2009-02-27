@@ -18,9 +18,8 @@ class GoogleSet
     @items = nil if reload
     @items ||= begin 
       path   = SETS_PATH + '&' + query_string
-      puts path
       result = Net::HTTP.start(SETS_DOMAIN, 80) { |http| http.get(path) }
-      result.body.scan(/<a href="http:\/\/www\.google\.com\/search\?hl=en&amp;q=[^"]+">(.*?)<\/a>/)
+      result.body.scan(/<a href="http:\/\/www\.google\.com\/search\?hl=en&amp;q=[^"]+">(.*?)<\/a>/).map {|i| i.to_s}
     end
   end
   
@@ -36,3 +35,5 @@ class GoogleSet
       @params.map {|k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')
     end
 end
+
+puts GoogleSet.new(*%w{titania oberon romeo}).to_a.inspect
