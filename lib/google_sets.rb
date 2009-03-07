@@ -1,9 +1,8 @@
-require 'net/http'
+require 'open-uri'
 require 'cgi'
 
 class GoogleSet
-  SETS_DOMAIN = 'labs.google.com'
-  SETS_PATH   = '/sets?hl=en&btn=Large+Set'
+  SETS_PATH = 'http://labs.google.com/sets?hl=en&btn=Large+Set&'
   
   attr_accessor :items
   
@@ -15,14 +14,14 @@ class GoogleSet
   end
   
   def fetch
-    path   = SETS_PATH + '&' + query_string
-    result = Net::HTTP.start(SETS_DOMAIN, 80) { |http| http.get(path) }
-    result.body.scan(%r{<a href="http://www\.google\.com/search\?hl=en&amp;q=[^"]+">(.*?)</a>}).map {|i| i.to_s}
+    path   = SETS_PATH + query_string
+    result = open(path).read
+    result.scan(%r{<a href="http://www\.google\.com/search\?hl=en&amp;q=[^"]+">(.*?)</a>}).map {|i| i.to_s}
   end
   
   protected
     
-    def query_string
-      @params.map {|k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')
-    end
+  def query_string
+    @params.map {|k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')
+  end
 end
