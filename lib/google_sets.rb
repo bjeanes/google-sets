@@ -14,20 +14,11 @@ class GoogleSet
     end
   end
   
-  def items(reload = false)
-    @items = nil if reload
-    @items ||= begin 
-      path   = SETS_PATH + '&' + query_string
-      result = Net::HTTP.start(SETS_DOMAIN, 80) { |http| http.get(path) }
-      result.body.scan(/<a href="http:\/\/www\.google\.com\/search\?hl=en&amp;q=[^"]+">(.*?)<\/a>/).map {|i| i.to_s}
-    end
+  def fetch
+    path   = SETS_PATH + '&' + query_string
+    result = Net::HTTP.start(SETS_DOMAIN, 80) { |http| http.get(path) }
+    result.body.scan(%r{<a href="http://www\.google\.com/search\?hl=en&amp;q=[^"]+">(.*?)</a>}).map {|i| i.to_s}
   end
-  
-  def [](index); items[index]; end
-  def size; items.size; end
-  def rand; items[Kernel.rand(items.size)]; end
-  def to_s; items.join("\n"); end
-  def to_a; items.dup; end
   
   protected
     
@@ -36,4 +27,4 @@ class GoogleSet
     end
 end
 
-puts GoogleSet.new(*%w{titania oberon romeo}).to_a.inspect
+p GoogleSet.new(*%w{titania oberon romeo}).fetch
