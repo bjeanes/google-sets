@@ -26,5 +26,3 @@ class GoogleSet
       @params.map {|k,v| "#{CGI.escape(k.to_s)}=#{CGI.escape(v.to_s)}" }.join('&')
     end
 end
-
-p GoogleSet.new(*%w{titania oberon romeo}).fetch
